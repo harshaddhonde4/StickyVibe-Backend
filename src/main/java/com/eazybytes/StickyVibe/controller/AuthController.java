@@ -2,6 +2,8 @@ package com.eazybytes.StickyVibe.controller;
 
 import com.eazybytes.StickyVibe.dto.LoginRequestDto;
 import com.eazybytes.StickyVibe.dto.LoginResponseDto;
+import com.eazybytes.StickyVibe.dto.UserDto;
+import com.eazybytes.StickyVibe.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -11,6 +13,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController
 {
     private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> apiLogin(@RequestBody LoginRequestDto loginRequestDto)
@@ -30,8 +34,13 @@ public class AuthController
         {
             Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(loginRequestDto.username(), loginRequestDto.password()));
+            var userDto = new UserDto();
+            var loggedInUser = (User) authentication.getPrincipal();
+            userDto.setName(loggedInUser.getUsername());
+
+            String jwt = jwtUtil.generateJwtToken(authentication);
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new LoginResponseDto(HttpStatus.OK.getReasonPhrase(), null, null));
+                    .body(new LoginResponseDto(HttpStatus.OK.getReasonPhrase(), userDto, jwt));
         }
         catch (BadCredentialsException ex)
         {
