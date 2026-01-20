@@ -2,8 +2,10 @@ package com.eazybytes.StickyVibe.controller;
 
 import com.eazybytes.StickyVibe.dto.LoginRequestDto;
 import com.eazybytes.StickyVibe.dto.LoginResponseDto;
+import com.eazybytes.StickyVibe.dto.RegisterRequestDto;
 import com.eazybytes.StickyVibe.dto.UserDto;
 import com.eazybytes.StickyVibe.util.JwtUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -13,11 +15,17 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.userdetails.User;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -25,6 +33,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController
 {
     private final AuthenticationManager authenticationManager;
+    private final InMemoryUserDetailsManager inMemoryUserDetailsManager;
+    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
@@ -59,7 +69,20 @@ public class AuthController
     private ResponseEntity<LoginResponseDto> buildErrorResponse(HttpStatus status, String message) {
         return ResponseEntity.status(status).body(new LoginResponseDto(message, null, null));
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> createUser(@RequestBody @Valid RegisterRequestDto registerRequestDto) {
+    inMemoryUserDetailsManager.createUser(
+        new User(
+            registerRequestDto.getEmail(),
+            passwordEncoder.encode(registerRequestDto.getPassword()),
+            List.of(new SimpleGrantedAuthority("USER"))));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("Registration successful");
+    }
 }
+
+
 
 
 
