@@ -4,9 +4,12 @@ import com.eazybytes.StickyVibe.dto.LoginRequestDto;
 import com.eazybytes.StickyVibe.dto.LoginResponseDto;
 import com.eazybytes.StickyVibe.dto.RegisterRequestDto;
 import com.eazybytes.StickyVibe.dto.UserDto;
+import com.eazybytes.StickyVibe.entity.Customer;
+import com.eazybytes.StickyVibe.repository.CustomerRepository;
 import com.eazybytes.StickyVibe.util.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +36,9 @@ import java.util.List;
 public class AuthController
 {
     private final AuthenticationManager authenticationManager;
-    private final InMemoryUserDetailsManager inMemoryUserDetailsManager;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final CustomerRepository customerRepository;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> apiLogin(@RequestBody LoginRequestDto loginRequestDto)
@@ -47,6 +50,7 @@ public class AuthController
             var userDto = new UserDto();
             var loggedInUser = (User) authentication.getPrincipal();
             userDto.setName(loggedInUser.getUsername());
+            userDto.setEmail(loggedInUser.getUsername());
 
             String jwt = jwtUtil.generateJwtToken(authentication);
             return ResponseEntity.status(HttpStatus.OK)
@@ -72,11 +76,11 @@ public class AuthController
 
     @PostMapping("/register")
     public ResponseEntity<String> createUser(@RequestBody @Valid RegisterRequestDto registerRequestDto) {
-    inMemoryUserDetailsManager.createUser(
-        new User(
-            registerRequestDto.getEmail(),
-            passwordEncoder.encode(registerRequestDto.getPassword()),
-            List.of(new SimpleGrantedAuthority("USER"))));
+        Customer customer = new Customer();
+        BeanUtils.copyProperties(registerRequestDto, customer);
+        customer.setMobileNumber(registerRequestDto.getPhone());
+        customer.setPasswordHash(passwordEncoder.encode(registerRequestDto.getPassword()));
+        customerRepository.save(customer);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body("Registration successful");
     }

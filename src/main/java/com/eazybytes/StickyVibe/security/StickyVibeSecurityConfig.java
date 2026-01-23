@@ -63,25 +63,16 @@ public class StickyVibeSecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService()
-    {
-        var user1 = User.builder().username("Harshad").password(("$argon2id$v=19$m=14,t=2,p=1$Nmg4eGR3a1dWUUZnZWIzVQ$L1rc9t+kqxcH1I3M62M2Ci3V2BzWITu9gteKhNc82r0")).roles("USER", "ADMIN").build();
-        var user2 = User.builder().username("John").password(("$argon2id$v=19$m=14,t=2,p=1$Nmg4eGR3a1dWUUZnZWIzVQ$VoPfWZM7TNVMxUSj/6+QY0jI+4B0kX0QsFnDjSCYSb0")).roles("USER").build();
-        return new InMemoryUserDetailsManager(user1, user2);
+    public AuthenticationManager authenticationManager(PasswordEncoder passwordEncoder) {
+        var daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
+        var providerManager = new ProviderManager(daoAuthenticationProvider);
+        return providerManager;
     }
 
     @Bean
     public PasswordEncoder passwordEncoder()
     {
         return new Argon2PasswordEncoder(16, 32, 1, 1 << 14, 2);
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
-        var daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
-        var providerManager = new ProviderManager(daoAuthenticationProvider);
-        return providerManager;
     }
 }
