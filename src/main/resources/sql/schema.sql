@@ -38,3 +38,19 @@ CREATE TABLE IF NOT EXISTS customers
     UNIQUE KEY unique_email (email),
     UNIQUE KEY unique_mobile_number (mobile_number)
     );
+
+CREATE TABLE IF NOT EXISTS address
+(
+    address_id    BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customer_id       BIGINT NOT NULL UNIQUE,
+    street        VARCHAR(150) NOT NULL,
+    city          VARCHAR(100) NOT NULL,
+    state         VARCHAR(100) NOT NULL,
+    postal_code   VARCHAR(20)  NOT NULL,
+    country       VARCHAR(100) NOT NULL,
+    created_at    TIMESTAMP    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    created_by    VARCHAR(20)  NOT NULL,
+    updated_at    TIMESTAMP    DEFAULT NULL,
+    updated_by    VARCHAR(20)  DEFAULT NULL,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id) ON DELETE CASCADE
+);

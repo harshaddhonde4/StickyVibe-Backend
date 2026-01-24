@@ -1,6 +1,7 @@
 package com.eazybytes.StickyVibe.util;
 
 import com.eazybytes.StickyVibe.constants.ApplicationConstants;
+import com.eazybytes.StickyVibe.entity.Customer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
@@ -25,10 +26,12 @@ public class JwtUtil
         String jwt = "";
         String secret = env.getProperty(ApplicationConstants.JWT_SECRET_KEY, ApplicationConstants.JWT_SECRET_DEFAULT_VALUE);
         SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        User fetchedUser = (User) authentication.getPrincipal();
+        Customer fetchedCustomer = (Customer) authentication.getPrincipal();
         jwt = Jwts.builder()
                 .issuer("StickyVibe")
-                .claim("username", fetchedUser.getUsername())
+                .claim("username", fetchedCustomer.getEmail())
+                .claim("email", fetchedCustomer.getEmail())
+                .claim("phone", fetchedCustomer.getMobileNumber())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 86400000))
                 .signWith(secretKey)

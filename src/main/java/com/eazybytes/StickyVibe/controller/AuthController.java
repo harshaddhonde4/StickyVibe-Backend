@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.password.CompromisedPasswordChecker;
+import org.springframework.security.authentication.password.CompromisedPasswordDecision;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,9 +28,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.core.userdetails.User;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -39,6 +43,7 @@ public class AuthController
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final CustomerRepository customerRepository;
+    private final CompromisedPasswordChecker compromisedPasswordChecker;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> apiLogin(@RequestBody LoginRequestDto loginRequestDto)
@@ -48,10 +53,10 @@ public class AuthController
             Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(loginRequestDto.username(), loginRequestDto.password()));
             var userDto = new UserDto();
-            var loggedInUser = (User) authentication.getPrincipal();
-            userDto.setName(loggedInUser.getUsername());
-            userDto.setEmail(loggedInUser.getUsername());
-
+            var loggedInUser = (Customer) authentication.getPrincipal();
+            userDto.setName(loggedInUser.getName());
+            userDto.setEmail(loggedInUser.getEmail());
+            userDto.setPhone(loggedInUser.getMobileNumber());
             String jwt = jwtUtil.generateJwtToken(authentication);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new LoginResponseDto(HttpStatus.OK.getReasonPhrase(), userDto, jwt));
@@ -75,7 +80,24 @@ public class AuthController
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> createUser(@RequestBody @Valid RegisterRequestDto registerRequestDto) {
+    public ResponseEntity<?> createUser(@RequestBody @Valid RegisterRequestDto registerRequestDto) {
+        CompromisedPasswordDecision decision = compromisedPasswordChecker.check(registerRequestDto.getPassword());
+        if (decision.isCompromised()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("password", "Weak Password, Please Enter a Strong Password"));
+        }
+        Optional<Customer> existingCustomer = customerRepository.findByEmailOrMobileNumber(registerRequestDto.getEmail(), registerRequestDto.getPhone());
+        if (existingCustomer.isPresent()) {
+            Map<String, String> errors = new HashMap<>();
+            Customer customer = existingCustomer.get();
+            if (customer.getEmail().equalsIgnoreCase(registerRequestDto.getEmail())) {
+                errors.put("email", "Email already exists");
+            }
+            if (customer.getMobileNumber().equalsIgnoreCase(registerRequestDto.getPhone())) {
+                errors.put("phone", "Phone number already exists");
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(errors);
+        }
         Customer customer = new Customer();
         BeanUtils.copyProperties(registerRequestDto, customer);
         customer.setMobileNumber(registerRequestDto.getPhone());
@@ -85,6 +107,8 @@ public class AuthController
                 .body("Registration successful");
     }
 }
+
+
 
 
 
