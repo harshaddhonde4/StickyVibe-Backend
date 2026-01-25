@@ -20,7 +20,7 @@ public class Address extends BaseEntity {
   private Long id;
 
   @NotNull
-  @OneToOne(fetch = FetchType.LAZY, optional = false)
+  @OneToOne(fetch = FetchType.EAGER, optional = false)
   @OnDelete(action = OnDeleteAction.CASCADE)
   @JoinColumn(name = "customer_id", nullable = false)
   private Customer customer;

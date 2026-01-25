@@ -28,7 +28,6 @@ public class ProductController
     @GetMapping
     public ResponseEntity<List<ProductDto>> getProducts() throws InterruptedException
     {
-        Thread.sleep(1000);
         List<ProductDto> productList = productService.getProducts();
 //        System.out.println("Testing code changes2");
         return ResponseEntity.ok().body(productList);

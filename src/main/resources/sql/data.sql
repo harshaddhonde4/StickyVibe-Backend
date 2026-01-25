@@ -87,3 +87,6 @@ VALUES ('NoHesitation', 'Always ready to take charge!', 6.00, 60, '/stickers/IWo
 
 INSERT INTO products (name, description, price, popularity, image_url, created_at, created_by, updated_at, updated_by)
 VALUES ('Wardgaze', 'Protective power of the evil eye', 6.00, 60, '/stickers/EvilEye.png', CURRENT_TIMESTAMP, 'admin', NULL, NULL);
+
+ALTER TABLE address MODIFY COLUMN created_by VARCHAR(100);
+ALTER TABLE address MODIFY COLUMN updated_by VARCHAR(100);
