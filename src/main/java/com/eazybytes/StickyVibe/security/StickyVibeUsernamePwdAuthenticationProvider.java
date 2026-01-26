@@ -1,6 +1,7 @@
 package com.eazybytes.StickyVibe.security;
 
 import com.eazybytes.StickyVibe.entity.Customer;
+import com.eazybytes.StickyVibe.entity.Role;
 import com.eazybytes.StickyVibe.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -8,11 +9,14 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -35,9 +39,11 @@ public class StickyVibeUsernamePwdAuthenticationProvider implements Authenticati
         customerRepository
             .findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException("User not found for the username" + email));
+    Set<Role> roles = customer.getRoles();
+    List<GrantedAuthority> authorities = roles.stream().map(role -> (GrantedAuthority) () -> role.getName()).toList();
     if(passwordEncoder.matches(password, customer.getPasswordHash()))
     {
-       return new UsernamePasswordAuthenticationToken(customer, null, Collections.emptyList());
+       return new UsernamePasswordAuthenticationToken(customer, null, authorities);
     }
     else
     {

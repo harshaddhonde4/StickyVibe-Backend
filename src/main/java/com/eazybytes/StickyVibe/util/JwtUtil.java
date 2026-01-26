@@ -5,6 +5,7 @@ import com.eazybytes.StickyVibe.entity.Customer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +33,7 @@ public class JwtUtil
                 .claim("username", fetchedCustomer.getEmail())
                 .claim("email", fetchedCustomer.getEmail())
                 .claim("phone", fetchedCustomer.getMobileNumber())
+                .claim("roles", authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(java.util.stream.Collectors.joining(",")))
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 86400000))
                 .signWith(secretKey)
@@ -39,3 +41,4 @@ public class JwtUtil
         return jwt;
     }
 }
+

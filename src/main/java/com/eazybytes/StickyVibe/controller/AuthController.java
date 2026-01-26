@@ -5,6 +5,7 @@ import com.eazybytes.StickyVibe.dto.LoginResponseDto;
 import com.eazybytes.StickyVibe.dto.RegisterRequestDto;
 import com.eazybytes.StickyVibe.dto.UserDto;
 import com.eazybytes.StickyVibe.entity.Customer;
+import com.eazybytes.StickyVibe.entity.Role;
 import com.eazybytes.StickyVibe.repository.CustomerRepository;
 import com.eazybytes.StickyVibe.util.JwtUtil;
 import jakarta.validation.Valid;
@@ -20,6 +21,7 @@ import org.springframework.security.authentication.password.CompromisedPasswordC
 import org.springframework.security.authentication.password.CompromisedPasswordDecision;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -57,6 +61,7 @@ public class AuthController
             userDto.setName(loggedInUser.getName());
             userDto.setEmail(loggedInUser.getEmail());
             userDto.setPhone(loggedInUser.getMobileNumber());
+            userDto.setRoles(authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(java.util.stream.Collectors.joining(",")));
             String jwt = jwtUtil.generateJwtToken(authentication);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new LoginResponseDto(HttpStatus.OK.getReasonPhrase(), userDto, jwt));
@@ -102,6 +107,9 @@ public class AuthController
         BeanUtils.copyProperties(registerRequestDto, customer);
         customer.setMobileNumber(registerRequestDto.getPhone());
         customer.setPasswordHash(passwordEncoder.encode(registerRequestDto.getPassword()));
+        Role role = new Role();
+        role.setName("ROLE_USER");
+        customer.setRoles(Set.of(role));
         customerRepository.save(customer);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body("Registration successful");
