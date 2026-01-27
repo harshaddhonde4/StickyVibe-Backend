@@ -90,3 +90,5 @@ VALUES ('Wardgaze', 'Protective power of the evil eye', 6.00, 60, '/stickers/Evi
 
 ALTER TABLE address MODIFY COLUMN created_by VARCHAR(100);
 ALTER TABLE address MODIFY COLUMN updated_by VARCHAR(100);
+ALTER TABLE contacts MODIFY COLUMN created_by VARCHAR(100);
+ALTER TABLE contacts MODIFY COLUMN updated_by VARCHAR(100);

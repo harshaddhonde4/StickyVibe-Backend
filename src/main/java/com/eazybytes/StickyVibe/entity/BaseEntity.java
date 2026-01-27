@@ -1,4 +1,4 @@
-package com.eazybytes.eazystore.entity;
+package com.eazybytes.StickyVibe.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

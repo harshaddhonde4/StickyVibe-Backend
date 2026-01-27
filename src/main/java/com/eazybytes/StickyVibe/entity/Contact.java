@@ -3,7 +3,7 @@ package com.eazybytes.StickyVibe.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import com.eazybytes.eazystore.entity.BaseEntity;
+import com.eazybytes.StickyVibe.entity.BaseEntity;
 import java.time.Instant;
 
 @Getter

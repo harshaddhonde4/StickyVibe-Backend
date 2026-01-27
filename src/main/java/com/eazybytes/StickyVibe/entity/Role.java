@@ -1,6 +1,6 @@
 package com.eazybytes.StickyVibe.entity;
 
-import com.eazybytes.eazystore.entity.BaseEntity;
+import com.eazybytes.StickyVibe.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

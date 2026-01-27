@@ -3,6 +3,7 @@ package com.eazybytes.StickyVibe.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import com.eazybytes.StickyVibe.entity.BaseEntity;
 
 import java.math.BigDecimal;
 
@@ -10,7 +11,7 @@ import java.math.BigDecimal;
 @Setter
 @Entity
 @Table(name = "PRODUCTS")
-public class Product extends com.eazybytes.eazystore.entity.BaseEntity {
+public class Product extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "PRODUCT_ID", nullable = false)
