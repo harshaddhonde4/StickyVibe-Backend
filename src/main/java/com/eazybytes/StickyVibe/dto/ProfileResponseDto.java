@@ -10,10 +10,6 @@ public class ProfileResponseDto
     private String name;
     private String email;
     private String mobileNumber;
-    private String street;
-    public String country;
-    public String city;
-    public String state;
-    public String postalCode;
+    private AddressDto address;
     public boolean emailUpdated;
 }

@@ -1,9 +1,6 @@
 package com.eazybytes.StickyVibe.controller;
 
-import com.eazybytes.StickyVibe.dto.LoginRequestDto;
-import com.eazybytes.StickyVibe.dto.LoginResponseDto;
-import com.eazybytes.StickyVibe.dto.RegisterRequestDto;
-import com.eazybytes.StickyVibe.dto.UserDto;
+import com.eazybytes.StickyVibe.dto.*;
 import com.eazybytes.StickyVibe.entity.Customer;
 import com.eazybytes.StickyVibe.entity.Role;
 import com.eazybytes.StickyVibe.repository.CustomerRepository;
@@ -12,7 +9,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,17 +18,13 @@ import org.springframework.security.authentication.password.CompromisedPasswordD
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -62,6 +54,11 @@ public class AuthController
             userDto.setEmail(loggedInUser.getEmail());
             userDto.setPhone(loggedInUser.getMobileNumber());
             userDto.setRoles(authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(java.util.stream.Collectors.joining(",")));
+            if (loggedInUser.getAddress() != null) {
+                AddressDto addressDto = new AddressDto();
+                BeanUtils.copyProperties(loggedInUser.getAddress(), addressDto);
+                userDto.setAddress(addressDto);
+            }
             String jwt = jwtUtil.generateJwtToken(authentication);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new LoginResponseDto(HttpStatus.OK.getReasonPhrase(), userDto, jwt));
