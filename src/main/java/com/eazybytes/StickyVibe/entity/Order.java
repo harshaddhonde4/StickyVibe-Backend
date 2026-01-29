@@ -17,8 +17,8 @@ import lombok.Setter;
 @AttributeOverrides({
   @AttributeOverride(
       name = "createdBy",
-      column = @Column(name = "created_by", nullable = false, length = 20)),
-  @AttributeOverride(name = "updatedBy", column = @Column(name = "updated_by", length = 20))
+      column = @Column(name = "created_by", nullable = false, length = 100)),
+  @AttributeOverride(name = "updatedBy", column = @Column(name = "updated_by", length = 100))
 })
 public class Order extends BaseEntity {
   @Id

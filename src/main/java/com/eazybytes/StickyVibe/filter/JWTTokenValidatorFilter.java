@@ -3,6 +3,7 @@ package com.eazybytes.StickyVibe.filter;
 import com.eazybytes.StickyVibe.constants.ApplicationConstants;
 import com.eazybytes.StickyVibe.security.PublicPathConfig;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
@@ -56,7 +57,13 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter
                     }
                 }
 
-            } catch (Exception exception) {
+            }
+            catch (ExpiredJwtException exception) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Token expired!");
+                return;
+            }
+            catch (Exception exception) {
                 throw new BadCredentialsException("Invalid Token received!");
             }
         }

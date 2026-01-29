@@ -35,7 +35,7 @@ public class JwtUtil
                 .claim("phone", fetchedCustomer.getMobileNumber())
                 .claim("roles", authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(java.util.stream.Collectors.joining(",")))
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 86400000))
+                .expiration(new Date(System.currentTimeMillis() + 86400000 * 10))
                 .signWith(secretKey)
                 .compact();
         return jwt;

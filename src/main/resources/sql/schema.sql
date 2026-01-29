@@ -77,9 +77,9 @@ CREATE TABLE IF NOT EXISTS orders
     payment_status VARCHAR(50)                           NOT NULL,
     order_status   VARCHAR(50)                           NOT NULL,
     created_at     TIMESTAMP   DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    created_by     VARCHAR(20)                           NOT NULL,
+    created_by     VARCHAR(100)                           NOT NULL,
     updated_at     TIMESTAMP   DEFAULT NULL,
-    updated_by     VARCHAR(20) DEFAULT NULL,
+    updated_by     VARCHAR(100) DEFAULT NULL,
     FOREIGN KEY (customer_id) REFERENCES customers (customer_id)
 );
 
@@ -91,9 +91,15 @@ CREATE TABLE IF NOT EXISTS order_items
     quantity        INT NOT NULL,
     price           DECIMAL(10, 2) NOT NULL,
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    created_by      VARCHAR(20)    NOT NULL,
+    created_by      VARCHAR(100)    NOT NULL,
     updated_at      TIMESTAMP      DEFAULT NULL,
-    updated_by      VARCHAR(20)    DEFAULT NULL,
+    updated_by      VARCHAR(100)    DEFAULT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(order_id),
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
+
+
+ALTER TABLE orders MODIFY COLUMN created_by VARCHAR(100) NOT NULL;
+ALTER TABLE orders MODIFY COLUMN updated_by VARCHAR(100) DEFAULT NULL;
+ALTER TABLE order_items MODIFY COLUMN created_by VARCHAR(100) NOT NULL;
+ALTER TABLE order_items MODIFY COLUMN updated_by VARCHAR(100) DEFAULT NULL;
