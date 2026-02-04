@@ -18,10 +18,11 @@ CREATE TABLE if not exists contacts(
     email       VARCHAR(150) NOT NULL ,
     phone       VARCHAR(15) NOT NULL ,
     message     VARCHAR(500) NOT NULL ,
+    status      VARCHAR(50) NOT NULL,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL ,
-    created_by  VARCHAR(20) NOT NULL ,
-    updated_by  VARCHAR(100) DEFAULT NULL,
-    updated_at  varchar(20) DEFAULT NULL
+    created_by  VARCHAR(100) NOT NULL ,
+    updated_at  TIMESTAMP DEFAULT NULL,
+    updated_by  VARCHAR(100) DEFAULT NULL
     );
 
 CREATE TABLE IF NOT EXISTS customers
@@ -103,3 +104,7 @@ ALTER TABLE orders MODIFY COLUMN created_by VARCHAR(100) NOT NULL;
 ALTER TABLE orders MODIFY COLUMN updated_by VARCHAR(100) DEFAULT NULL;
 ALTER TABLE order_items MODIFY COLUMN created_by VARCHAR(100) NOT NULL;
 ALTER TABLE order_items MODIFY COLUMN updated_by VARCHAR(100) DEFAULT NULL;
+-- Update the contacts table structure
+ALTER TABLE contacts MODIFY COLUMN created_by VARCHAR(100) NOT NULL;
+ALTER TABLE contacts MODIFY COLUMN updated_by VARCHAR(100) DEFAULT NULL;
+ALTER TABLE contacts MODIFY COLUMN updated_at TIMESTAMP DEFAULT NULL;

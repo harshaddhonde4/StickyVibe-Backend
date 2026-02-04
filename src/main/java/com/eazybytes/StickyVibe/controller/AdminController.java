@@ -1,6 +1,7 @@
 package com.eazybytes.StickyVibe.controller;
 
 import com.eazybytes.StickyVibe.constants.ApplicationConstants;
+import com.eazybytes.StickyVibe.dto.ContactResponseDto;
 import com.eazybytes.StickyVibe.dto.OrderResponseDto;
 import com.eazybytes.StickyVibe.dto.ResponseDto;
 import com.eazybytes.StickyVibe.entity.Order;
@@ -38,6 +39,17 @@ public class AdminController {
     public ResponseEntity<ResponseDto> cancelOrder(@PathVariable Long orderId) {
         Order cancelledOrder = orderService.updateOrderStatus(orderId, ApplicationConstants.ORDER_STATUS_CANCELLED);
         return ResponseEntity.ok(new ResponseDto("200", "Order #" + cancelledOrder.getOrderId() + "has been cancelled successfully"));
+    }
+
+    @GetMapping("/messages")
+    public ResponseEntity<List<ContactResponseDto>> loadAllContacts() {
+        return ResponseEntity.ok().body(contactService.getAllOpenMessages());
+    }
+
+    @PatchMapping("/messages/{messageId}/close")
+    public ResponseEntity<ResponseDto> closeMessage(@PathVariable Long messageId) {
+        contactService.updateMessageStatus(messageId, ApplicationConstants.CLOSED_MESSAGE);
+        return ResponseEntity.ok(new ResponseDto("200", "Message #" + messageId + "has been closed successfully"));
     }
 }
 
