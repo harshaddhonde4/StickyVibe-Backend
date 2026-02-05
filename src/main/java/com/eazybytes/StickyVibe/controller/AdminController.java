@@ -31,14 +31,14 @@ public class AdminController {
 
     @PatchMapping("orders/{orderId}/confirm")
     public ResponseEntity<ResponseDto> confirmOrder(@PathVariable Long orderId) {
-        Order confirmedOrder = orderService.updateOrderStatus(orderId, ApplicationConstants.ORDER_STATUS_CONFIRMED);
-        return ResponseEntity.ok(new ResponseDto("200", "Order #" + confirmedOrder.getOrderId() + "has been confirmed successfully"));
+        orderService.updateOrderStatus(orderId, ApplicationConstants.ORDER_STATUS_CONFIRMED);
+        return ResponseEntity.ok(new ResponseDto("200", "Order #" + orderId + "has been confirmed successfully"));
     }
 
     @PatchMapping("orders/{orderId}/cancel")
     public ResponseEntity<ResponseDto> cancelOrder(@PathVariable Long orderId) {
-        Order cancelledOrder = orderService.updateOrderStatus(orderId, ApplicationConstants.ORDER_STATUS_CANCELLED);
-        return ResponseEntity.ok(new ResponseDto("200", "Order #" + cancelledOrder.getOrderId() + "has been cancelled successfully"));
+        orderService.updateOrderStatus(orderId, ApplicationConstants.ORDER_STATUS_CANCELLED);
+        return ResponseEntity.ok(new ResponseDto("200", "Order #" + orderId + "has been cancelled successfully"));
     }
 
     @GetMapping("/messages")

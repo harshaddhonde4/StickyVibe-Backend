@@ -13,6 +13,8 @@ import com.eazybytes.StickyVibe.repository.ProductRepository;
 import com.eazybytes.StickyVibe.service.IOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.eazybytes.StickyVibe.dto.OrderItemResponseDto;
 import java.util.List;
@@ -57,7 +59,7 @@ public class OrderServiceImpl implements IOrderService
     public List<OrderResponseDto> getCustomerOrders()
     {
         Customer customer = profileServiceImpl.getAuthenticatedCustomer();
-        List<Order> orders = orderRepository.findByCustomerOrderByCreatedAtDesc(customer);
+        List<Order> orders = orderRepository.findOrderByCustomerNative(customer.getCustomerId());
         return orders.stream().map(this::mapToOrderResponseDTO).collect(Collectors.toList());
     }
 
@@ -87,16 +89,15 @@ public class OrderServiceImpl implements IOrderService
 
     @Override
     public List<OrderResponseDto> getAllPendingOrders() {
-        List<Order> list = orderRepository.findByOrderStatus(ApplicationConstants.ORDER_STATUS_CREATED);
+        List<Order> list = orderRepository.findOrderByStatusNative(ApplicationConstants.ORDER_STATUS_CREATED);
         return list.stream().map(this::mapToOrderResponseDTO).collect(Collectors.toList());
     }
 
     @Override
-    public Order updateOrderStatus(Long orderId, String orderStatus) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order", "OrderID", orderId.toString()));
-        order.setOrderStatus(orderStatus);
-        return orderRepository.save(order);
+    public void updateOrderStatus(Long orderId, String orderStatus) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String updatedBy = authentication.getName();
+        orderRepository.updateOrderStatus(orderId, orderStatus, updatedBy);
     }
 }
 
