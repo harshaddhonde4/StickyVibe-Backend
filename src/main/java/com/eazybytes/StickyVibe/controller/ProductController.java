@@ -29,7 +29,6 @@ public class ProductController
     public ResponseEntity<List<ProductDto>> getProducts() throws InterruptedException
     {
         List<ProductDto> productList = productService.getProducts();
-//        System.out.println("Testing code changes2");
         return ResponseEntity.ok().body(productList);
     }
 }

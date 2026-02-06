@@ -4,6 +4,7 @@ import com.eazybytes.StickyVibe.dto.*;
 import com.eazybytes.StickyVibe.entity.Customer;
 import com.eazybytes.StickyVibe.entity.Role;
 import com.eazybytes.StickyVibe.repository.CustomerRepository;
+import com.eazybytes.StickyVibe.repository.RoleRepository;
 import com.eazybytes.StickyVibe.util.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class AuthController
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final CustomerRepository customerRepository;
+    private final RoleRepository roleRepository;
     private final CompromisedPasswordChecker compromisedPasswordChecker;
 
     @PostMapping("/login")
@@ -104,9 +106,7 @@ public class AuthController
         BeanUtils.copyProperties(registerRequestDto, customer);
         customer.setMobileNumber(registerRequestDto.getPhone());
         customer.setPasswordHash(passwordEncoder.encode(registerRequestDto.getPassword()));
-        Role role = new Role();
-        role.setName("ROLE_USER");
-        customer.setRoles(Set.of(role));
+        roleRepository.findByName("ROLE_USER").ifPresent(role -> customer.setRoles(Set.of(role)));
         customerRepository.save(customer);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body("Registration successful");
