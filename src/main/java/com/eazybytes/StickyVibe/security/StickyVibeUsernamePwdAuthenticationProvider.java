@@ -4,6 +4,7 @@ import com.eazybytes.StickyVibe.entity.Customer;
 import com.eazybytes.StickyVibe.entity.Role;
 import com.eazybytes.StickyVibe.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,11 +14,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+@Profile("prod")
 @Component
 @RequiredArgsConstructor
 public class StickyVibeUsernamePwdAuthenticationProvider implements AuthenticationProvider
